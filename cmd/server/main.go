@@ -82,7 +82,7 @@ func RunHTTP(listener string, handler http.Handler) {
 
 func RunHTTPS(listener string, handler http.Handler, cafile, certfile, keyfile string) {
 
-	// create a certificate pool with the client ca
+	// create a certificate pool with the ca certificate
 	cacert, err := os.ReadFile(cafile)
 	if err != nil {
 		log.Fatal(err)
@@ -90,26 +90,10 @@ func RunHTTPS(listener string, handler http.Handler, cafile, certfile, keyfile s
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(cacert)
 
-	// Create the TLS Config with the CA pool and enable Client certificate validation
-
+	// create the TLS config and enable client authentication
+	// note: using tls 1.3 so all default ciphers etc. are secure
 	tlsConfig := &tls.Config{
-		PreferServerCipherSuites: true,
-		CurvePreferences: []tls.CurveID{
-			tls.CurveP256,
-			tls.X25519,
-		},
 		MinVersion: tls.VersionTLS13,
-		CipherSuites: []uint16{
-			tls.TLS_AES_128_GCM_SHA256,
-			tls.TLS_AES_256_GCM_SHA384,
-			tls.TLS_CHACHA20_POLY1305_SHA256,
-			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-		},
 		ClientCAs:  caCertPool,
 		ClientAuth: tls.RequestClientCert,
 	}
