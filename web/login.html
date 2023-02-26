@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title></title>
+  <style>
+    form.form-login {
+        display: table;
+    }
+    div.form-login {
+        display: table-row;
+    }
+    label, input {
+        display: table-cell;
+        margin-bottom: 10px;
+    }
+    label {
+        padding-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <form class="form-login" method="post" action="{{.Action}}">
+    <div class="form-login">
+      <label for="name">Username: </label>
+      <input type="text" name="name" id="name" required>
+    </div>
+    <div class="form-login">
+      <label for="password">Password: </label>
+      <input type="password" name="password" id="password" required>
+    </div>
+    <div class="form-login">
+      <input type="submit" value="Login">
+    </div>
+  </form>
+</body>
+</html>

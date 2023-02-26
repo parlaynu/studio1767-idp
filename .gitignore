@@ -1,0 +1,30 @@
+# ignore golang binary files (no extension)
+*
+!*.*
+!*/
+
+# ignore python virtual env
+pyenv/
+
+# keep config templates but ignore the rest
+**/configs/*
+!**/configs/*tpl
+
+# keys and certs - only used for testing
+*crt
+*key
+*pfx
+
+# ignore terraform working state
+*.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.*
+
+# for local work
+local/
+
+# system files
+.DS_Store
+
