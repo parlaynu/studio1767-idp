@@ -53,9 +53,10 @@ func TestUserDb(t *testing.T) {
 	// test successful attempts
 	{
 		for _, user := range users {
-			result := udb.Verify(user.Name, user.Password)
-			require.True(t, result)
-			u, err := udb.LookupUser(user.Name)
+			u, err := udb.VerifyUser(user.Name, user.Password)
+			require.NoError(t, err)
+			require.NotNil(t, u)
+			u, err = udb.LookupUser(user.Name)
 			require.NoError(t, err)
 			require.NotNil(t, u)
 		}
@@ -68,8 +69,9 @@ func TestUserDb(t *testing.T) {
 
 	// test failures
 	for _, user := range users {
-		result := udb.Verify(user.Name, "incorrect-password")
-		require.False(t, result)
+		u, err := udb.VerifyUser(user.Name, "incorrect-password")
+		require.Error(t, err)
+		require.Nil(t, u)
 	}
 	{
 		u, err := udb.LookupUser("non-existing-user")
@@ -96,9 +98,9 @@ func createUserDb(tusers []testUser, tgroups []testGroup) (string, error) {
 		passwords = append(passwords, user.Password)
 
 		users = append(users, userdb.User{
-			UserId:     1000 + i,
-			GroupId:    1000 + i,
-			UserName:   user.Name,
+			UidNumber:  1000 + i,
+			GidNumber:  1000 + i,
+			Name:       user.Name,
 			Password:   string(crypt_pw),
 			FullName:   fmt.Sprintf("User%d Family%d", i, i),
 			GivenName:  fmt.Sprintf("User%d", i),
@@ -112,8 +114,8 @@ func createUserDb(tusers []testUser, tgroups []testGroup) (string, error) {
 	groups := []userdb.Group{}
 	for i, group := range tgroups {
 		groups = append(groups, userdb.Group{
-			GroupId: 2000 + i,
-			Name:    group.Name,
+			GidNumber: 2000 + i,
+			Name:      group.Name,
 		})
 	}
 

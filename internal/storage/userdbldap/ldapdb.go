@@ -28,7 +28,7 @@ func NewUserDb(ldapServer string, ldapPort int, searchBase, searchDn, searchPw s
 	}
 
 	// create the struct
-	udb := userDb{
+	ldp := ldapDb{
 		server:     fmt.Sprintf("%s:%d", ldapServer, ldapPort),
 		tlsConfig:  &tlsConfig,
 		searchBase: searchBase,
@@ -37,15 +37,15 @@ func NewUserDb(ldapServer string, ldapPort int, searchBase, searchDn, searchPw s
 	}
 
 	// do a test connection just to make sure it's all ok
-	err = udb.testBind()
+	err = ldp.testBind()
 	if err != nil {
 		return nil, err
 	}
 
-	return &udb, nil
+	return &ldp, nil
 }
 
-type userDb struct {
+type ldapDb struct {
 	server     string
 	tlsConfig  *tls.Config
 	searchBase string
@@ -53,35 +53,35 @@ type userDb struct {
 	searchPw   string
 }
 
-func (udb *userDb) VerifyUser(userName, userPw string) (*userdb.User, error) {
+func (ldp *ldapDb) VerifyUser(userName, userPw string) (*userdb.User, error) {
 	if len(userPw) == 0 {
 		return nil, fmt.Errorf("password required: %w", userdb.ErrUserNotFound)
 	}
-	user, err := udb.findUser(userName, userPw)
+	user, err := ldp.findUser(userName, userPw)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (udb *userDb) LookupUser(userName string) (*userdb.User, error) {
-	user, err := udb.findUser(userName, "")
+func (ldp *ldapDb) LookupUser(userName string) (*userdb.User, error) {
+	user, err := ldp.findUser(userName, "")
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (udb *userDb) LookupGroup(groupName string) (*userdb.Group, error) {
-	group, err := udb.findGroup(groupName)
+func (ldp *ldapDb) LookupGroup(groupName string) (*userdb.Group, error) {
+	group, err := ldp.findGroup(groupName)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w %w", groupName, userdb.ErrGroupNotFound, err)
 	}
 	return group, nil
 }
 
-func (udb *userDb) testBind() error {
-	l, err := ldap.Dial("tcp", udb.server)
+func (ldp *ldapDb) testBind() error {
+	l, err := ldap.Dial("tcp", ldp.server)
 	if err != nil {
 		return err
 	}
@@ -89,28 +89,28 @@ func (udb *userDb) testBind() error {
 	return nil
 }
 
-func (udb *userDb) findUser(userName, userPw string) (*userdb.User, error) {
-	l, err := ldap.Dial("tcp", udb.server)
+func (ldp *ldapDb) findUser(userName, userPw string) (*userdb.User, error) {
+	l, err := ldap.Dial("tcp", ldp.server)
 	if err != nil {
 		return nil, err
 	}
 	defer l.Close()
 
 	// upgrade to tls
-	err = l.StartTLS(udb.tlsConfig)
+	err = l.StartTLS(ldp.tlsConfig)
 	if err != nil {
 		return nil, err
 	}
 
 	// bind with the search user
-	err = l.Bind(udb.searchDn, udb.searchPw)
+	err = l.Bind(ldp.searchDn, ldp.searchPw)
 	if err != nil {
 		return nil, err
 	}
 
 	// search for the user
 	searchRequest := ldap.NewSearchRequest(
-		udb.searchBase,
+		ldp.searchBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=posixAccount)(uid=%s))", userName),
 		[]string{"dn", "uidNumber", "gidNumber", "cn", "sn", "givenName", "mail"},
@@ -170,7 +170,7 @@ func (udb *userDb) findUser(userName, userPw string) (*userdb.User, error) {
 
 	// search for the groups the user is part of
 	searchRequest = ldap.NewSearchRequest(
-		udb.searchBase,
+		ldp.searchBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=posixGroup)(memberUid=%s))", userName),
 		[]string{"dn", "cn"},
@@ -195,28 +195,28 @@ func (udb *userDb) findUser(userName, userPw string) (*userdb.User, error) {
 	return &user, nil
 }
 
-func (udb *userDb) findGroup(groupName string) (*userdb.Group, error) {
-	l, err := ldap.Dial("tcp", udb.server)
+func (ldp *ldapDb) findGroup(groupName string) (*userdb.Group, error) {
+	l, err := ldap.Dial("tcp", ldp.server)
 	if err != nil {
 		return nil, err
 	}
 	defer l.Close()
 
 	// upgrade to tls
-	err = l.StartTLS(udb.tlsConfig)
+	err = l.StartTLS(ldp.tlsConfig)
 	if err != nil {
 		return nil, err
 	}
 
 	// bind with the search user
-	err = l.Bind(udb.searchDn, udb.searchPw)
+	err = l.Bind(ldp.searchDn, ldp.searchPw)
 	if err != nil {
 		return nil, err
 	}
 
 	// search for the user
 	searchRequest := ldap.NewSearchRequest(
-		udb.searchBase,
+		ldp.searchBase,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		fmt.Sprintf("(&(objectClass=posixGroup)(cn=%s))", groupName),
 		[]string{"dn", "gidNumber"},

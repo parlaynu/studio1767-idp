@@ -26,17 +26,17 @@ func NewUserDb(path string) (userdb.UserDb, error) {
 		return nil, err
 	}
 
-	udb := userDb{}
-	udb.users = make(map[string]userdb.User)
-	udb.groups = make(map[string]userdb.Group)
+	ydb := yamlDb{}
+	ydb.users = make(map[string]userdb.User)
+	ydb.groups = make(map[string]userdb.Group)
 	for _, user := range usercfg.Users {
-		udb.users[user.Name] = user
+		ydb.users[user.Name] = user
 	}
 	for _, group := range usercfg.Groups {
-		udb.groups[group.Name] = group
+		ydb.groups[group.Name] = group
 	}
 
-	return &udb, nil
+	return &ydb, nil
 }
 
 type userConfig struct {
@@ -44,13 +44,13 @@ type userConfig struct {
 	Groups []userdb.Group `yaml:"groups"`
 }
 
-type userDb struct {
+type yamlDb struct {
 	users  map[string]userdb.User
 	groups map[string]userdb.Group
 }
 
-func (udb *userDb) VerifyUser(userName, password string) (*userdb.User, error) {
-	user, ok := udb.users[userName]
+func (ydb *yamlDb) VerifyUser(userName, password string) (*userdb.User, error) {
+	user, ok := ydb.users[userName]
 	if !ok {
 		return nil, fmt.Errorf("%s: %w", userName, userdb.ErrUserNotFound)
 	}
@@ -61,16 +61,16 @@ func (udb *userDb) VerifyUser(userName, password string) (*userdb.User, error) {
 	return &user, nil
 }
 
-func (udb *userDb) LookupUser(userName string) (*userdb.User, error) {
-	user, ok := udb.users[userName]
+func (ydb *yamlDb) LookupUser(userName string) (*userdb.User, error) {
+	user, ok := ydb.users[userName]
 	if !ok {
 		return nil, fmt.Errorf("%s: %w", userName, userdb.ErrUserNotFound)
 	}
 	return &user, nil
 }
 
-func (udb *userDb) LookupGroup(groupName string) (*userdb.Group, error) {
-	group, ok := udb.groups[groupName]
+func (ydb *yamlDb) LookupGroup(groupName string) (*userdb.Group, error) {
+	group, ok := ydb.groups[groupName]
 	if !ok {
 		return nil, fmt.Errorf("%s: %w", groupName, userdb.ErrGroupNotFound)
 	}
