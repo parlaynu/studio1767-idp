@@ -17,20 +17,38 @@ import (
 	"s1767.xyz/idp/internal/storage/clientstore"
 	"s1767.xyz/idp/internal/storage/keystore"
 	"s1767.xyz/idp/internal/storage/tokenstore"
+	"s1767.xyz/idp/internal/storage/userdb"
+	"s1767.xyz/idp/internal/storage/userdbldap"
 	"s1767.xyz/idp/internal/storage/userdbyaml"
 )
 
 func New(cfg *config.Config) (api.Service, error) {
 
+	var err error
+
 	// create the stores
-	dbpath := cfg.UserDb.Path
-	if !filepath.IsAbs(dbpath) {
-		dbpath = filepath.Join(filepath.Dir(cfg.ConfigFile), cfg.UserDb.Path)
+	var udb userdb.UserDb
+	switch cfg.UserDb.Type {
+	case "ldap":
+		ldapServer, ldapPort := cfg.UserDb.LdapServer, cfg.UserDb.LdapPort
+		sBase, sDn, sPw := cfg.UserDb.SearchBase, cfg.UserDb.SearchDn, cfg.UserDb.SearchPw
+		udb, err = userdbldap.NewUserDb(ldapServer, ldapPort, sBase, sDn, sPw, cfg.Https.CaCertFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create user db: %w", err)
+		}
+	case "yaml":
+		dbpath := cfg.UserDb.Path
+		if !filepath.IsAbs(dbpath) {
+			dbpath = filepath.Join(filepath.Dir(cfg.ConfigFile), cfg.UserDb.Path)
+		}
+		udb, err = userdbyaml.NewUserDb(dbpath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create user db: %w", err)
+		}
+	default:
+		return nil, fmt.Errorf("unknown userdb type: %s", cfg.UserDb.Type)
 	}
-	userdb, err := userdbyaml.NewUserDb(dbpath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create user db: %w", err)
-	}
+
 	cstore := clientstore.New(cfg)
 	kstore, err := keystore.New(5)
 	if err != nil {
@@ -39,12 +57,12 @@ func New(cfg *config.Config) (api.Service, error) {
 	tstore := tokenstore.New(cfg.IssuerURL, kstore)
 
 	// create the endpoint handlers
-	cauth := authcommon.New(cstore, tstore, userdb)
-	bauth, err := authbasic.New(cauth, userdb, cfg.ContentDir)
+	cauth := authcommon.New(cstore, tstore)
+	bauth, err := authbasic.New(cauth, udb, cfg.ContentDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create basic auth handler: %w", err)
 	}
-	mauth := authmtls.New(cauth)
+	mauth := authmtls.New(cauth, udb)
 	oconfig, err := oidconfig.New(cfg.IssuerURL, cfg.AuthURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create oidc config handler: %w", err)

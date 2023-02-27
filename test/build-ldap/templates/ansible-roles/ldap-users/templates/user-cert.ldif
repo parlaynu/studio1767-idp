@@ -1,0 +1,4 @@
+dn: uid=$${USER_NAME},ou=users,${domain_dn}
+changeType: modify
+add: userCertificate;binary
+userCertificate;binary:: $${DER_CERTIFICATE}

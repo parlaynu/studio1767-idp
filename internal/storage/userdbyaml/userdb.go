@@ -1,7 +1,6 @@
 package userdbyaml
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -9,11 +8,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"s1767.xyz/idp/internal/storage/userdb"
-)
-
-var (
-	ErrUserNotFound  = errors.New("user not found")
-	ErrGroupNotFound = errors.New("group not found")
 )
 
 func NewUserDb(path string) (userdb.UserDb, error) {
@@ -36,7 +30,7 @@ func NewUserDb(path string) (userdb.UserDb, error) {
 	udb.users = make(map[string]userdb.User)
 	udb.groups = make(map[string]userdb.Group)
 	for _, user := range usercfg.Users {
-		udb.users[user.UserName] = user
+		udb.users[user.Name] = user
 	}
 	for _, group := range usercfg.Groups {
 		udb.groups[group.Name] = group
@@ -55,30 +49,30 @@ type userDb struct {
 	groups map[string]userdb.Group
 }
 
-func (udb *userDb) Verify(username, password string) bool {
-	user, ok := udb.users[username]
+func (udb *userDb) VerifyUser(userName, password string) (*userdb.User, error) {
+	user, ok := udb.users[userName]
 	if !ok {
-		return false
+		return nil, fmt.Errorf("%s: %w", userName, userdb.ErrUserNotFound)
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return false
-	}
-	return true
-}
-
-func (udb *userDb) LookupUser(username string) (*userdb.User, error) {
-	user, ok := udb.users[username]
-	if !ok {
-		return nil, fmt.Errorf("%s: %w", username, ErrUserNotFound)
+		return nil, fmt.Errorf("%s: %w", userName, userdb.ErrUserNotFound)
 	}
 	return &user, nil
 }
 
-func (udb *userDb) LookupGroup(groupname string) (*userdb.Group, error) {
-	group, ok := udb.groups[groupname]
+func (udb *userDb) LookupUser(userName string) (*userdb.User, error) {
+	user, ok := udb.users[userName]
 	if !ok {
-		return nil, fmt.Errorf("%s: %w", groupname, ErrGroupNotFound)
+		return nil, fmt.Errorf("%s: %w", userName, userdb.ErrUserNotFound)
+	}
+	return &user, nil
+}
+
+func (udb *userDb) LookupGroup(groupName string) (*userdb.Group, error) {
+	group, ok := udb.groups[groupName]
+	if !ok {
+		return nil, fmt.Errorf("%s: %w", groupName, userdb.ErrGroupNotFound)
 	}
 	return &group, nil
 }

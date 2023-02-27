@@ -90,6 +90,10 @@ environments and running tests.
     <td>build-local</td>
     <td>Creates certificates and configurations for the test server and this prototype IdP server to work together on the same host.</td>
   </tr>
+  <tr>
+    <td>build-ldap</td>
+    <td>Creates an OpenLDAP server in AWS-EC2 and the configs and certs for the IdP and test servers to use it.</td>
+  </tr>
 </table>
 
 
@@ -97,7 +101,6 @@ environments and running tests.
 
 There's quite a bit to do to get this to a production ready status, including the below:
 
-* LDAP connector backend
 * Clustering
 * Token renewal
 * Key rotation

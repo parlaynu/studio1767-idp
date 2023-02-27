@@ -84,7 +84,7 @@ func (ts *tokenStore) accessToken(ti *TokenInfo, now, exp time.Time, event_id st
 		claims["name"] = ti.User.FullName
 		claims["given_name"] = ti.User.GivenName
 		claims["family_name"] = ti.User.FamilyName
-		claims["username"] = ti.User.UserName
+		claims["username"] = ti.User.Name
 		claims["groups"] = ti.User.Groups
 	}
 
@@ -129,7 +129,7 @@ func (ts *tokenStore) openidToken(ti *TokenInfo, now, exp time.Time, event_id, a
 
 	claims["given_name"] = ti.User.GivenName
 	claims["family_name"] = ti.User.FamilyName
-	claims["username"] = ti.User.UserName
+	claims["username"] = ti.User.Name
 	claims["email"] = ti.User.Email
 	claims["email_verified"] = true
 

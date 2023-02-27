@@ -1,0 +1,53 @@
+## create the groups
+
+- name: check status of /var/lib/ldap/done_groups
+  stat:
+    path: /var/lib/ldap/done_groups
+  register: ldap_group_setup_done
+
+- name: upload group config
+  template:
+    src: groups.ldif
+    dest: /var/tmp/groups.ldif
+  when: not ldap_group_setup_done.stat.exists
+
+- name: import groups
+  shell: ldapadd -H ldap://127.0.0.1:${ldap_port} -ZZ -x -w '${admin_password}' -D 'cn=admin,{{ domain_dn }}' -f /var/tmp/groups.ldif
+  when: not ldap_group_setup_done.stat.exists
+
+# - name: remove group config files
+#   file:
+#     path: /var/tmp/groups.ldif
+#     state: absent
+
+- name: set the groups done flag
+  file:
+    path: /var/lib/ldap/done_groups
+    state: touch
+
+## create the users
+
+- name: check status of /var/lib/ldap/done_users
+  stat:
+    path: /var/lib/ldap/done_users
+  register: ldap_user_setup_done
+
+- name: upload user config
+  template:
+    src: users.ldif
+    dest: /var/tmp/users.ldif
+  when: not ldap_user_setup_done.stat.exists
+
+- name: import users
+  shell: ldapadd -H ldap://127.0.0.1:${ldap_port} -ZZ -x -w '${admin_password}' -D 'cn=admin,{{ domain_dn }}' -f /var/tmp/users.ldif
+  when: not ldap_user_setup_done.stat.exists
+
+# - name: remove group config files
+#   file:
+#     path: /var/tmp/groups.ldif
+#     state: absent
+
+- name: set the users done flag
+  file:
+    path: /var/lib/ldap/done_users
+    state: touch

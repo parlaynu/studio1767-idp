@@ -21,7 +21,7 @@ resource "tls_cert_request" "service_idp" {
 
 resource "tls_locally_signed_cert" "service_idp" {
   ca_private_key_pem = local.test_ca_key
-  ca_cert_pem        = local.test_ca_cert
+   ca_cert_pem        = local.test_ca_cert
   cert_request_pem   = tls_cert_request.service_idp.cert_request_pem
 
   validity_period_hours = 240
@@ -49,23 +49,28 @@ resource "local_file" "service_idp_cert" {
 
 ## idp server test config
 
+locals {
+  search_user = element(sort(tolist(keys(var.users))), 0)
+}
+
 resource "local_file" "idp_config" {
   content = templatefile("../../configs/config.yaml.tpl", {
-    frontend_listen = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.frontend_port}"
-    backend_listen  = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.backend_port}"
-    ca_cert_file    = "certs/ca.crt"
-    https_key_file  = "certs/service-idp.key"
-    https_cert_file = "certs/service-idp.crt"
-    content_dir     = join("/", [dirname(dirname(abspath(path.root))), "web"])
-    clients         = local.clients
-    user_db_type     = "yaml"
-    user_db_file    = "userdb.yaml"
-    ldap_server      = ""
-    ldap_port        = 0
-    ldap_search_base = ""
-    ldap_search_dn   = ""
-    ldap_search_pw   = ""
+    frontend_listen  = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.frontend_port}"
+    backend_listen   = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.backend_port}"
+    ca_cert_file     = "certs/ca.crt"
+    https_key_file   = "certs/service-idp.key"
+    https_cert_file  = "certs/service-idp.crt"
+    content_dir      = join("/", [dirname(dirname(abspath(path.root))), "web"])
+    clients          = local.clients
+    user_db_type     = "ldap"
+    user_db_file     = ""
+    ldap_server      = aws_instance.s1767.public_ip
+    ldap_port        = var.service_ldap.port
+    ldap_search_base = local.project_domain_dn
+    ldap_search_dn   = "uid=${local.search_user},ou=users,${local.project_domain_dn}"
+    ldap_search_pw   = var.users[local.search_user].password
   })
   filename        = "local/configs/config-idp.yaml"
   file_permission = "0640"
 }
+

@@ -39,7 +39,13 @@ type ClientConfig struct {
 }
 
 type UserDb struct {
-	Path string `yaml:"path"`
+	Type       string `yaml:"type"`
+	Path       string `yaml:"path"`
+	LdapServer string `yaml:"ldap_server"`
+	LdapPort   int    `yaml:"ldap_port"`
+	SearchBase string `yaml:"search_base"`
+	SearchDn   string `yaml:"search_dn"`
+	SearchPw   string `yaml:"search_pw"`
 }
 
 func Load(file string) (*Config, error) {

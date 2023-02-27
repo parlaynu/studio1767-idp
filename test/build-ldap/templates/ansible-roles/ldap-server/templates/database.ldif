@@ -1,0 +1,15 @@
+dn: olcDatabase=mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcDbDirectory: /var/lib/ldap
+olcSuffix: {{ domain_dn }}
+olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
+olcAccess: {1}to attrs=shadowLastChange by self write by * read
+olcAccess: {2}to * by * read
+olcRootDN: cn=admin,{{ domain_dn }}
+olcRootPW: {{ encoded_admin_password.stdout }}
+olcDbIndex: objectClass eq
+olcDbIndex: cn,uid eq
+olcDbIndex: uidNumber,gidNumber eq
+olcDbIndex: member,memberUid eq

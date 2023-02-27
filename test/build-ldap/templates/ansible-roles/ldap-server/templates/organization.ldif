@@ -1,0 +1,16 @@
+dn: {{ domain_dn }}
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: {{ organization }}
+dc: {{ domain_dc }}
+
+dn: ou=users,{{ domain_dn }}
+objectclass: top
+objectclass: organizationalUnit
+ou: users
+
+dn: ou=groups,{{ domain_dn }}
+objectclass: top
+objectclass: organizationalUnit
+ou: groups

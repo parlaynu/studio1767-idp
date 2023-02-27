@@ -21,6 +21,11 @@ clients:
 %{ endfor ~}
 
 user_db:
-  type: yaml
+  type: ${user_db_type}
   path: ${user_db_file}
+  ldap_server: ${ldap_server}
+  ldap_port: ${ldap_port}
+  search_base: ${ldap_search_base}
+  search_dn: ${ldap_search_dn}
+  search_pw: ${ldap_search_pw}
 

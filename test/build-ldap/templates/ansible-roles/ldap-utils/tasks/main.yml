@@ -1,0 +1,49 @@
+## install the needed packages
+
+- name: install ldap utilities
+  apt:
+    name: ldap-utils
+    state: present
+
+
+## upload the ca certificate
+
+- name: upload CA certificate
+  copy:
+    src: certs/ca.crt
+    dest: /etc/ldap/certs/
+    owner: root
+    group: root
+    mode: 0644
+    directory_mode: 0755
+
+
+## configure the client
+
+- name: configure TLS client
+  lineinfile: 
+    path: /etc/ldap/ldap.conf
+    regexp: '^TLS_CACERT'
+    line: TLS_CACERT    /etc/ldap/certs/ca.crt
+
+
+## upload the scripts and secrets
+
+- name: upload scripts
+  copy:
+    src: scripts/
+    dest: /usr/local/admin/bin
+    owner: root
+    group: root
+    mode: 0755
+    directory_mode: 0755
+
+- name: upload secrets
+  copy:
+    src: secrets/
+    dest: /etc/ldap/secrets
+    owner: root
+    group: root
+    mode: 0600
+    directory_mode: 0700
+

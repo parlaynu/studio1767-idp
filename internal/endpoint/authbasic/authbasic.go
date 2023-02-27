@@ -77,16 +77,16 @@ func (ab *authBasic) authVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// extract form parameters
+	// verify the username and password
 	username := r.FormValue("name")
 	password := r.FormValue("password")
 
-	// verify the username password
-	if ab.userdb.Verify(username, password) == false {
+	user, err := ab.userdb.VerifyUser(username, password)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		log.Errorf("authbasic: login failed")
+		log.Errorf("authbasic: login failed: %v", err)
 		return
 	}
 
-	ab.auth.Authenticate(w, r, username, "")
+	ab.auth.Authenticate(w, r, user)
 }

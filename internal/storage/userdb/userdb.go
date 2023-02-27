@@ -1,15 +1,20 @@
 package userdb
 
+import (
+	"errors"
+)
+
 type UserDb interface {
-	Verify(username, password string) bool
-	LookupUser(username string) (*User, error)
-	LookupGroup(groupname string) (*Group, error)
+	VerifyUser(userName, password string) (*User, error)
+	LookupUser(userName string) (*User, error)
+	LookupGroup(groupName string) (*Group, error)
 }
 
 type User struct {
-	UserId     int      `yaml:"uid"`
-	GroupId    int      `yaml:"gid"`
-	UserName   string   `yaml:"name"`
+	Dn         string
+	Name       string   `yaml:"name"`
+	UidNumber  int      `yaml:"uid"`
+	GidNumber  int      `yaml:"gid"`
 	Password   string   `yaml:"password"`
 	FullName   string   `yaml:"full_name"`
 	GivenName  string   `yaml:"given_name"`
@@ -19,6 +24,12 @@ type User struct {
 }
 
 type Group struct {
-	GroupId int    `yaml:"gid"`
-	Name    string `yaml:"name"`
+	Dn        string
+	Name      string `yaml:"name"`
+	GidNumber int    `yaml:"gid"`
 }
+
+var (
+	ErrUserNotFound  = errors.New("user not found")
+	ErrGroupNotFound = errors.New("group not found")
+)

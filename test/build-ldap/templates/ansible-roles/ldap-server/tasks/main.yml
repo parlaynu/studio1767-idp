@@ -1,0 +1,168 @@
+## install the needed packages
+
+- name: install openldap packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
+      - slapd
+      - ldap-utils
+
+
+## change the port slapd listens on ... 
+##   389 seems to be blocked regardless of security group settings
+
+- name: change slapd listening port
+  lineinfile: 
+    path: /etc/default/slapd
+    regexp: '^SLAPD_SERVICES'
+    line: SLAPD_SERVICES="ldap://0.0.0.0:${ldap_port}/ ldapi:///"
+
+- name: restart slapd
+  systemd:
+    name: slapd
+    state: restarted
+  
+
+## check the status
+
+- name: check status of /var/lib/ldap/done
+  stat:
+    path: /var/lib/ldap/done
+  register: ldap_setup_done
+
+
+## configure tls on the server
+
+- name: install keys and certificates
+  copy:
+    src: certs
+    dest: /etc/ldap
+    owner: root
+    group: root
+    mode: 0644
+    directory_mode: 0755
+  when: not ldap_setup_done.stat.exists
+
+- name: lockdown server key
+  file:
+    path: /etc/ldap/certs/server.key
+    owner: openldap
+    group: openldap
+    mode: 0600
+  when: not ldap_setup_done.stat.exists
+
+- name: upload enable-tls config
+  template:
+    src: enable-tls.ldif
+    dest: /var/tmp/enable-tls.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: import enable-tls config
+  shell: ldapadd -H ldapi:// -Y EXTERNAL -f /var/tmp/enable-tls.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: remove tls config file
+  file:
+    path: /var/tmp/enable-tls.ldif
+    state: absent
+
+
+## configure TLS for client tools
+
+- name: configure ldap client utilities
+  lineinfile: 
+    path: /etc/ldap/ldap.conf
+    regexp: '^TLS_CACERT'
+    line: TLS_CACERT    /etc/ldap/certs/ca.crt
+
+
+## encode the password
+
+- name: encode admin password
+  shell: slappasswd -s '${admin_password}' -n
+  register: encoded_admin_password
+
+
+## remove the preinstalled database
+
+- name: remove preinstalled database
+  shell: ldapdelete -H ldapi:// -Q -Y EXTERNAL olcDatabase={1}mdb,cn=config
+  when: not ldap_setup_done.stat.exists
+
+- name: remove database file
+  file:
+    path: /var/lib/ldap/data.mdb
+    state: absent
+  when: not ldap_setup_done.stat.exists
+
+- name: remove database lock file
+  file:
+    path: /var/lib/ldap/lock.mdb
+    state: absent
+  when: not ldap_setup_done.stat.exists
+
+
+## create the ldap database for our domain
+
+- name: upload db config file for {{ domain_dn }}
+  template:
+    src: database.ldif
+    dest: /var/tmp/database.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: create database
+  shell: ldapadd -H ldapi:// -Y EXTERNAL -f /var/tmp/database.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: remove db config file
+  file:
+    path: /var/tmp/database.ldif
+    state: absent
+
+
+## enforce TLS on the database
+
+- name: upload force-tls config
+  template:
+    src: force-tls.ldif
+    dest: /var/tmp/force-tls.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: import force-tls config
+  shell: ldapadd -H ldapi:// -Y EXTERNAL -f /var/tmp/force-tls.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: remove force-tls config file
+  file:
+    path: /var/tmp/force-tls.ldif
+    state: absent
+
+
+## create the organization
+
+- name: upload organization config file for {{ domain_dn }}
+  template:
+    src: organization.ldif
+    dest: /var/tmp/organization.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: import organization
+  shell: ldapadd -H ldap://127.0.0.1:${ldap_port} -ZZ -x -w '${admin_password}' -D 'cn=admin,{{ domain_dn }}' -f /var/tmp/organization.ldif
+  when: not ldap_setup_done.stat.exists
+
+- name: remove organization config file
+  file:
+    path: /var/tmp/organization.ldif
+    state: absent
+
+
+## set the done flag...
+
+- name: set the done flag
+  file:
+    path: /var/lib/ldap/done
+    state: touch
+

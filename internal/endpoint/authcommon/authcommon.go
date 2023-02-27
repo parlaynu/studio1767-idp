@@ -13,12 +13,11 @@ import (
 )
 
 type Authenticator interface {
-	Authenticate(w http.ResponseWriter, r *http.Request, username, mail string)
+	Authenticate(w http.ResponseWriter, r *http.Request, user *userdb.User)
 }
 
-func New(cs clientstore.ClientStore, ts tokenstore.TokenStore, udb userdb.UserDb) Authenticator {
+func New(cs clientstore.ClientStore, ts tokenstore.TokenStore) Authenticator {
 	ah := &authenticator{
-		userdb: udb,
 		cstore: cs,
 		tstore: ts,
 	}
@@ -26,27 +25,11 @@ func New(cs clientstore.ClientStore, ts tokenstore.TokenStore, udb userdb.UserDb
 }
 
 type authenticator struct {
-	userdb userdb.UserDb
 	cstore clientstore.ClientStore
 	tstore tokenstore.TokenStore
 }
 
-func (au *authenticator) Authenticate(w http.ResponseWriter, r *http.Request, username, email string) {
-	// lookup the user
-	user, err := au.userdb.LookupUser(username)
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		log.Errorf("authcommon: login failed: %v", err)
-		return
-	}
-
-	// verify the email if provided
-	if len(email) > 0 && user.Email != email {
-		w.WriteHeader(http.StatusUnauthorized)
-		log.Errorf("authcommon: email doesn't match: %s -> %s", user.Email, email)
-		return
-	}
-
+func (au *authenticator) Authenticate(w http.ResponseWriter, r *http.Request, user *userdb.User) {
 	// check for required paramaters
 	required := []string{
 		"client_id",

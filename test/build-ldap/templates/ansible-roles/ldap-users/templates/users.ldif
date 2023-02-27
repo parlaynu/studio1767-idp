@@ -1,0 +1,33 @@
+{% for user in ldap_users %}
+dn: uid={{ user.name }},ou=users,{{ domain_dn }}
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+cn: {{ user.given_name }} {{ user.family_name }}
+givenName: {{ user.given_name }}
+sn: {{ user.family_name }}
+uid: {{ user.name }}
+uidNumber: {{ user.uid }}
+gidNumber: {{ user.gid }}
+homeDirectory: /home/{{ user.name }}
+mail: {{ user.name }}@{{ domain_dns }}
+loginShell: /bin/bash
+userPassword: {{ user.password }}
+
+dn: cn={{ user.name }},ou=groups,{{ domain_dn }}
+changeType: modify
+add: memberUid
+memberUid: {{ user.name }}
+
+{% for group in user.groups %}
+dn: cn={{ group }},ou=groups,{{ domain_dn }}
+changeType: modify
+add: memberUid
+memberUid: {{ user.name }}
+
+{% endfor %}
+{% endfor %}
+
+

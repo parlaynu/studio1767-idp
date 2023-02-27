@@ -1,0 +1,9 @@
+{% for group in ldap_groups %}
+dn: cn={{ group.name }},ou=groups,{{ domain_dn }}
+objectclass: top
+objectclass: posixGroup
+cn: {{ group.name }}
+gidNumber: {{ group.gid }}
+
+{% endfor %}
+
