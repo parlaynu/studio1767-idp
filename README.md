@@ -49,6 +49,7 @@ Run the following commands:
 
 You can run the test-client application like this:
 
+    cd test/test-client
     python3 -m venv pyenv
     source pyenv/bin/activate
     pip3 install -r requirements.txt
