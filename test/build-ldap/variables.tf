@@ -1,11 +1,11 @@
 ## project definitions
 
 variable "project_name" {
-  default = "Studio1767"
+  default = "Test1767"
 }
 
 variable "project_code" {
-  default = "s1767"
+  default = "test1767"
 }
 
 variable "project_domain" {

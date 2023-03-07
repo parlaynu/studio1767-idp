@@ -51,15 +51,15 @@ resource "local_file" "service_idp_cert" {
 
 resource "local_file" "idp_config" {
   content = templatefile("../../configs/config.yaml.tpl", {
-    frontend_listen = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.frontend_port}"
-    backend_listen  = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.backend_port}"
-    ca_cert_file    = "certs/ca.crt"
-    https_key_file  = "certs/service-idp.key"
-    https_cert_file = "certs/service-idp.crt"
-    content_dir     = join("/", [dirname(dirname(abspath(path.root))), "web"])
-    clients         = local.clients
+    frontend_listen  = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.frontend_port}"
+    backend_listen   = "https://${var.service_idp.ip_addresses[0]}:${var.service_idp.backend_port}"
+    ca_cert_file     = "certs/ca.crt"
+    https_key_file   = "certs/service-idp.key"
+    https_cert_file  = "certs/service-idp.crt"
+    content_dir      = join("/", [dirname(dirname(abspath(path.root))), "web"])
+    client_dir       = "clients"
     user_db_type     = "yaml"
-    user_db_file    = "userdb.yaml"
+    user_db_file     = "userdb.yaml"
     ldap_server      = ""
     ldap_port        = 0
     ldap_search_base = ""
@@ -67,5 +67,17 @@ resource "local_file" "idp_config" {
     ldap_search_pw   = ""
   })
   filename        = "local/configs/config-idp.yaml"
+  file_permission = "0640"
+}
+
+resource "local_file" "idp_client_config" {
+  for_each = local.clients
+
+  content = templatefile("../../configs/clients/client.yaml.tpl", {
+    id            = each.key
+    secret        = each.value.secret
+    redirect_urls = each.value.redirect_urls
+  })
+  filename        = "local/configs/clients/${each.key}.yaml"
   file_permission = "0640"
 }

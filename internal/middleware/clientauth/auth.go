@@ -8,8 +8,8 @@ import (
 	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
 )
 
-func New(clients []config.ClientConfig) func(http.Handler) http.Handler {
-	cmap := make(map[string]config.ClientConfig)
+func New(clients []*config.ClientConfig) func(http.Handler) http.Handler {
+	cmap := make(map[string]*config.ClientConfig)
 	for _, client := range clients {
 		cmap[client.Id] = client
 	}
@@ -24,7 +24,7 @@ func New(clients []config.ClientConfig) func(http.Handler) http.Handler {
 }
 
 type clientAuth struct {
-	clients map[string]config.ClientConfig
+	clients map[string]*config.ClientConfig
 	next    http.Handler
 }
 

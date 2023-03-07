@@ -27,7 +27,8 @@ type Config struct {
 		CertFile   string `yaml:"cert_file"`
 	}
 
-	Clients []ClientConfig `yaml:"clients"`
+	ClientDir string `yaml:"client_dir"`
+	Clients   []*ClientConfig
 
 	UserDb UserDb `yaml:"user_db"`
 }
@@ -77,11 +78,46 @@ func Load(file string) (*Config, error) {
 	if !strings.HasPrefix(cfg.Https.CertFile, "/") {
 		cfg.Https.CertFile = filepath.Join(configdir, cfg.Https.CertFile)
 	}
+	if !strings.HasPrefix(cfg.ClientDir, "/") {
+		cfg.ClientDir = filepath.Join(configdir, cfg.ClientDir)
+	}
 
 	cfg.Listeners.Backend = strings.TrimRight(cfg.Listeners.Backend, "/")
 	cfg.Listeners.Frontend = strings.TrimRight(cfg.Listeners.Frontend, "/")
 	cfg.IssuerURL = cfg.Listeners.Backend
 	cfg.AuthURL = strings.Join([]string{cfg.Listeners.Frontend, "auth"}, "/")
+
+	// load the client configs
+	entries, err := os.ReadDir(cfg.ClientDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read client configs: %w", err)
+	}
+
+	for _, e := range entries {
+		if !e.Type().IsRegular() {
+			continue
+		}
+		if !strings.HasSuffix(e.Name(), ".yaml") && !strings.HasSuffix(e.Name(), ".yaml") {
+			continue
+		}
+
+		fpath := filepath.Join(cfg.ClientDir, e.Name())
+		fh, err := os.Open(fpath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open client configuration file: %w", err)
+		}
+		defer fh.Close()
+
+		decoder := yaml.NewDecoder(fh)
+
+		var ccfg ClientConfig
+		err = decoder.Decode(&ccfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read client configuration file: %w", err)
+		}
+
+		cfg.Clients = append(cfg.Clients, &ccfg)
+	}
 
 	return &cfg, nil
 }

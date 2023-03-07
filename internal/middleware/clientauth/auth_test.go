@@ -59,8 +59,8 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello World"))
 }
 
-func createConfig() []config.ClientConfig {
-	clients := []config.ClientConfig{}
+func createConfig() []*config.ClientConfig {
+	clients := []*config.ClientConfig{}
 	nclients := 5
 	for i := 0; i < nclients; i++ {
 		client := config.ClientConfig{
@@ -68,7 +68,7 @@ func createConfig() []config.ClientConfig {
 			Secret:       fmt.Sprintf("Secret%d", i),
 			RedirectURLs: []string{fmt.Sprintf("http://server%d.example.com", i)},
 		}
-		clients = append(clients, client)
+		clients = append(clients, &client)
 	}
 
 	return clients

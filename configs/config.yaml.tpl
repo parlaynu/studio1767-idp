@@ -10,15 +10,7 @@ https:
 
 content_dir: ${content_dir}
 
-clients:
-%{ for id, client in clients ~}
-- id: ${id}
-  secret: "${client.secret}"
-  redirect_urls:
-%{ for url in client.redirect_urls ~}
-  - ${url}
-%{ endfor ~}
-%{ endfor ~}
+client_dir: ${client_dir}
 
 user_db:
   type: ${user_db_type}

@@ -61,7 +61,7 @@ resource "local_file" "idp_config" {
     https_key_file   = "certs/service-idp.key"
     https_cert_file  = "certs/service-idp.crt"
     content_dir      = join("/", [dirname(dirname(abspath(path.root))), "web"])
-    clients          = local.clients
+    client_dir       = "clients"
     user_db_type     = "ldap"
     user_db_file     = ""
     ldap_server      = aws_instance.s1767.public_ip
@@ -74,3 +74,14 @@ resource "local_file" "idp_config" {
   file_permission = "0640"
 }
 
+resource "local_file" "idp_client_config" {
+  for_each = local.clients
+
+  content = templatefile("../../configs/clients/client.yaml.tpl", {
+    id            = each.key
+    secret        = each.value.secret
+    redirect_urls = each.value.redirect_urls
+  })
+  filename        = "local/configs/clients/${each.key}.yaml"
+  file_permission = "0640"
+}
