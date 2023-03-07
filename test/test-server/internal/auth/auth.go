@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	log "github.com/sirupsen/logrus"
 
-	"s1767.xyz/test/internal/config"
+	"github.com/parlaynu/studio1767-oidc-idp-test/internal/config"
 )
 
 func NewAuthMiddleware(cfg *config.Config) (func(http.Handler) http.Handler, error) {

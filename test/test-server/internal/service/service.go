@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"s1767.xyz/test/api"
+	"github.com/parlaynu/studio1767-oidc-idp-test/api"
 )
 
 func New() api.Service {

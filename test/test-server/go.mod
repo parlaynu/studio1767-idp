@@ -1,4 +1,4 @@
-module s1767.xyz/test
+module github.com/parlaynu/studio1767-oidc-idp-test
 
 go 1.20
 

@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v3"
 
-	"s1767.xyz/idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
 )
 
 func NewUserDb(path string) (userdb.UserDb, error) {

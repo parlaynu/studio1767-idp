@@ -12,9 +12,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"s1767.xyz/test/api"
-	"s1767.xyz/test/internal/config"
-	"s1767.xyz/test/internal/service"
+	"github.com/parlaynu/studio1767-oidc-idp-test/api"
+	"github.com/parlaynu/studio1767-oidc-idp-test/internal/config"
+	"github.com/parlaynu/studio1767-oidc-idp-test/internal/service"
 )
 
 func main() {

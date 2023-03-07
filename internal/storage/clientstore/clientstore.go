@@ -1,7 +1,7 @@
 package clientstore
 
 import (
-	"s1767.xyz/idp/internal/config"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
 )
 
 type Client struct {

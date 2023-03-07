@@ -5,9 +5,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"s1767.xyz/idp/internal/endpoint/authcommon"
-	"s1767.xyz/idp/internal/middleware/mtls"
-	"s1767.xyz/idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/endpoint/authcommon"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/middleware/mtls"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
 )
 
 func New(au authcommon.Authenticator, udb userdb.UserDb) http.Handler {

@@ -16,7 +16,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 
-	"s1767.xyz/test/internal/config"
+	"github.com/parlaynu/studio1767-oidc-idp-test/internal/config"
 )
 
 type provider struct {

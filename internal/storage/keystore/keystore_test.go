@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"s1767.xyz/idp/internal/storage/keystore"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/keystore"
 )
 
 func TestKeyStore(t *testing.T) {

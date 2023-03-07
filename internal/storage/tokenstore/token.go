@@ -11,7 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 
-	"s1767.xyz/idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
 )
 
 type TokenInfo struct {
