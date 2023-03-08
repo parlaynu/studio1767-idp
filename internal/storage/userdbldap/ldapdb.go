@@ -181,16 +181,18 @@ func (ldp *ldapDb) findUser(userName, userPw string) (*userdb.User, error) {
 		return nil, err
 	}
 
-	var groups []string
-	for _, attr := range sr.Entries[0].Attributes {
-		if attr.Name == "cn" {
-			for _, v := range attr.Values {
-				groups = append(groups, v)
+	if len(sr.Entries) > 0 {
+		var groups []string
+		for _, attr := range sr.Entries[0].Attributes {
+			if attr.Name == "cn" {
+				for _, v := range attr.Values {
+					groups = append(groups, v)
+				}
+				break
 			}
-			break
 		}
+		user.Groups = groups
 	}
-	user.Groups = groups
 
 	return &user, nil
 }
