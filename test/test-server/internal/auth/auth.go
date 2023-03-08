@@ -110,7 +110,7 @@ func (am *authMware) handleCallback(w http.ResponseWriter, r *http.Request) {
 	idToken, err := am.provider.exchange(r.Context(), code)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		log.Error("auth: failed to exchange code for token: %v", err)
+		log.Errorf("auth: failed to exchange code for token: %v", err)
 		return
 	}
 
