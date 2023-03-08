@@ -30,6 +30,7 @@ func (ts *tokenStore) NewToken(ti *TokenInfo) (Token, error) {
 	now := time.Now()
 	duration := time.Hour * 24
 	exp := now.Add(duration)
+	now = now.Add(time.Second * -5)
 
 	// an event id
 	event_id := uuid.New().String()
