@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/keystore"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/tokenstore"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-idp/internal/storage/keystore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/tokenstore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/userdb"
 )
 
 func TestTokenStore(t *testing.T) {

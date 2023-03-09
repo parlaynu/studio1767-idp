@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/middleware/clientauth"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/middleware/mtls"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/middleware/trace"
+	"github.com/parlaynu/studio1767-idp/internal/config"
+	"github.com/parlaynu/studio1767-idp/internal/middleware/clientauth"
+	"github.com/parlaynu/studio1767-idp/internal/middleware/mtls"
+	"github.com/parlaynu/studio1767-idp/internal/middleware/trace"
 )
 
 type Service interface {

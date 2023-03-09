@@ -1,4 +1,4 @@
-module github.com/parlaynu/studio1767-oidc-idp-test
+module github.com/parlaynu/studio1767-idp-test
 
 go 1.20
 

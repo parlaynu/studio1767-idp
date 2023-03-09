@@ -1,4 +1,4 @@
-module github.com/parlaynu/studio1767-oidc-idp
+module github.com/parlaynu/studio1767-idp
 
 go 1.20
 

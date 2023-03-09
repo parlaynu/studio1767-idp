@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/keystore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/keystore"
 )
 
 type Token map[string]string

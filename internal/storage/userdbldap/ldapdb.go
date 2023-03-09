@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-ldap/ldap/v3"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-idp/internal/storage/userdb"
 )
 
 func NewUserDb(ldapServer string, ldapPort int, searchBase, searchDn, searchPw string, cafile string) (userdb.UserDb, error) {

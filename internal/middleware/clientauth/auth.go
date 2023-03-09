@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
+	"github.com/parlaynu/studio1767-idp/internal/config"
 )
 
 func New(clients []*config.ClientConfig) func(http.Handler) http.Handler {

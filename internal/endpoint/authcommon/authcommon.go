@@ -6,10 +6,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/endpoint/utils"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/clientstore"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/tokenstore"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-idp/internal/endpoint/utils"
+	"github.com/parlaynu/studio1767-idp/internal/storage/clientstore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/tokenstore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/userdb"
 )
 
 type Authenticator interface {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/clientstore"
+	"github.com/parlaynu/studio1767-idp/internal/config"
+	"github.com/parlaynu/studio1767-idp/internal/storage/clientstore"
 )
 
 func TestClientStore(t *testing.T) {

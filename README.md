@@ -1,10 +1,10 @@
-# Studio 1767 - Prototype OIDC/IdP Server
+# Studio 1767 - Proof of Concept OIDC/IdP Server
 
-This project was motivated by a desire to have a common technique to secure internal web APIs for both 
+This project builds a very simple OIDC IdP server that supports authentication using mTLS as well 
+as the usual username/password.
+
+It was motivated by a desire to have a common technique to secure internal web APIs for both 
 interactive and batch client aplications. 
-
-To do this, it provides a very simple OIDC IdP server that supports authentication using mTLS as well 
-as username/password.
 
 Once the client is authenticated, the API servers then work the same for both interactive clients and batch clients.
 
@@ -102,9 +102,11 @@ environments and running tests.
 
 There's quite a bit to do to get this to a production ready status, including the below:
 
+* Rigorous testing and validation
 * Clustering
+* Connection pooling
+* PKCE
 * Token renewal
 * Key rotation
 * Certificate revocation
-* Rigorous testing and validation
 

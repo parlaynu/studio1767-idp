@@ -9,7 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/keystore"
+	"github.com/parlaynu/studio1767-idp/internal/storage/keystore"
 )
 
 func New(ks keystore.KeyStore) http.Handler {

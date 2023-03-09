@@ -12,9 +12,9 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/parlaynu/studio1767-oidc-idp-test/internal/auth"
-	"github.com/parlaynu/studio1767-oidc-idp-test/internal/config"
-	"github.com/parlaynu/studio1767-oidc-idp-test/internal/trace"
+	"github.com/parlaynu/studio1767-idp-test/internal/auth"
+	"github.com/parlaynu/studio1767-idp-test/internal/config"
+	"github.com/parlaynu/studio1767-idp-test/internal/trace"
 )
 
 type Service interface {

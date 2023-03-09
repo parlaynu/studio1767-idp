@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/config"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/middleware/clientauth"
+	"github.com/parlaynu/studio1767-idp/internal/config"
+	"github.com/parlaynu/studio1767-idp/internal/middleware/clientauth"
 )
 
 func TestClientAuth(t *testing.T) {

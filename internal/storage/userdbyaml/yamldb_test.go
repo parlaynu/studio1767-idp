@@ -9,8 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v3"
 
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdb"
-	"github.com/parlaynu/studio1767-oidc-idp/internal/storage/userdbyaml"
+	"github.com/parlaynu/studio1767-idp/internal/storage/userdb"
+	"github.com/parlaynu/studio1767-idp/internal/storage/userdbyaml"
 )
 
 type testUser struct {
